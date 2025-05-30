@@ -1,0 +1,16 @@
+{
+  "name": "@nightmare_09/common-app",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^3.25.36"
+  },
+  "devDependencies": {},
+  "description": ""
+}

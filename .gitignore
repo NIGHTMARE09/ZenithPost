@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Environment variables - VERY IMPORTANT for security
+.env
+.env.*
+!.env.example # It's good practice to commit an example env file
+
+# Cloudflare Workers / Wrangler specific
+.wrangler/
+.dev.vars # Local development secrets for Wrangler
+
+# Build output / Cache
+dist/
+build/
+out/
+.DS_Store # macOS
+Thumbs.db # Windows
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE specific (Visual Studio Code)
+.vscode/*
+# You might want to commit specific VS Code settings for team consistency
+# If so, un-ignore them like this:
+# !.vscode/settings.json
+# !.vscode/extensions.json
+# !.vscode/launch.json
+
+# Prisma
+# schema.prisma should be committed.
+# Migration files in prisma/migrations/ should be committed.
+# The generated Prisma client (e.g., src/generated/prisma or as configured in your schema.prisma)
+# is often committed as well, especially if it simplifies build steps for others.
+# If your DATABASE_URL is only in .env, it's covered.
+
+# Operating System files
+.DS_Store
+Thumbs.db
