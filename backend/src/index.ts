@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 import userRouter from './routes/user';
 import blogRouter from './routes/blog';
+import {cors} from 'hono/cors';
 
 // Helper function to create and type the extended Prisma client
 const createExtendedPrismaClient = (datasourceUrl: string) => {
@@ -31,6 +32,14 @@ app.use("*", async(c, next)=>{
   c.set("prisma", prismaInstance);
   await next();
 })
+
+app.use('/*', cors({
+  origin: ['http://localhost:5173'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  exposeHeaders: ['Content-Length'],
+  credentials: true
+}));
 
 app.route('/api/v1/user', userRouter);
 app.route('/api/v1/blog', blogRouter);

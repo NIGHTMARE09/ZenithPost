@@ -5,6 +5,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { decode, sign, verify } from 'hono/jwt'
 import bcrypt from 'bcryptjs';
 import { createPostInput, updatePostInput } from '@nightmare_09/common-app'; 
+import { authMiddleware } from '../middlewares/authmiddleware';
 const createExtendedPrismaClient = (datasourceUrl: string) => {
     return new PrismaClient({ datasourceUrl }).$extends(withAccelerate());
 };
@@ -28,30 +29,7 @@ const blogRouter = new Hono<{
 }>();
 
 
-blogRouter.use('/*', async (c, next) => {
-    try{
-
-        const jwt = c.req.header('Authorization');
-        if (!jwt) {
-            return c.json({ error: 'Unauthorized: Missing JWT' }, 401);
-        }
-        const parts = jwt.split(' ');
-        if(parts.length !== 2 || parts[0] !== 'Bearer'){
-            return c.json({ error: 'Unauthorized: Invalid JWT format' }, 401);
-        }
-        const token = parts[1];
-        const payload = await verify(token, c.env.JWT_SECRET);
-        if (!payload || typeof payload.id === 'undefined') {
-            return c.json({ error: 'Unauthorized: Invalid token payload' }, 401);
-        }
-        c.set('userId', String(payload.id));
-        await next();
-    }
-    catch(error){
-        console.error('Error in authentication middleware:', error);
-        return c.json({ error: 'Unauthorized: Token verification failed' }, 401);
-    }
-})
+blogRouter.use('/*', authMiddleware);
 
 blogRouter.post('/', async(c) => {
     try{
@@ -69,13 +47,14 @@ blogRouter.post('/', async(c) => {
                 title: body.title,
                 content: body.content,
                 authorId: Number(userId)
-            }
+            },
+            select: { id : true}
         });
     
         return c.json({
             id: post.id,
             message: 'Blog post created successfully for user ' + userId
-        });
+        }, 201);
     }
     catch(error){
         console.error('Error creating blog post:', error);
@@ -106,14 +85,15 @@ blogRouter.put('/', async(c) => {
             data:{
                 title: body.title,
                 content: body.content
-            }
+            },
+            select: {id : true}
         });
         return c.json({
             id: updatedPost.id,
             message: 'Blog post updated successfully for user ' + userId
-        });
+        },200);
     }
-    catch(error){
+    catch(error: any){
         console.error('Error updating blog post:', error);
         return c.json({ error: 'Failed to update blog post. Please try again later.' }, 500);
     }
@@ -141,7 +121,6 @@ blogRouter.get('/:id', async(c) => {
  try {
         const prisma = c.get("prisma");
         const blogId = c.req.param('id');
-
         // Validate id format
         const id = Number(blogId);
         if (isNaN(id)) {
@@ -151,6 +130,20 @@ blogRouter.get('/:id', async(c) => {
         const blog = await prisma.blog.findUnique({
             where: {
                 id: id
+            },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                authorId: true,
+                published: true,
+                createdAt: true,
+                author:{
+                    select: {
+                        name: true
+                    }
+                }
+                // tags: true,
             }
         });
         if(!blog){

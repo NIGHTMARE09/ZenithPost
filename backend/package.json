@@ -6,11 +6,11 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
-    "@nightmare_09/common-app": "^1.0.0",
+    "@nightmare_09/common-app": "^1.1.0",
     "@prisma/client": "^6.8.2",
     "@prisma/extension-accelerate": "^2.0.0",
     "bcryptjs": "^3.0.2",
-    "hono": "^4.7.10",
+    "hono": "^4.7.11",
     "prisma": "^6.8.2"
   },
   "devDependencies": {
